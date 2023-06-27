@@ -5,65 +5,12 @@ import numpy as np
 import pandas as pd
 import logging
 from timeit import default_timer as timer
-from tqdm import tqdm
-from utils import seq_iterator, get_antigen_input, get_antibody_input, convert_dock_input_to_score_input, is_nb, matrix_to_pdb_antibody, \
-    matrix_to_pdb_antigen, get_model_with_chains, antibody_sequence, get_seq_aa
-from Bio.PDB.PDBParser import PDBParser
-from Bio.PDB.cealign import CEAligner
-from Bio.PDB.PDBIO import PDBIO
+from utils import *
+from network_input import get_antigen_input, get_antibody_input, convert_dock_input_to_score_input
+from matrix_to_pdb import matrix_to_pdb_antibody, matrix_to_pdb_antigen
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 import tensorflow as tf
-
-
-def make_alignment_file(pdb):
-    """
-    makes alignment file for modeller
-    """
-    pdb_name = pdb.split(".")[0]
-    pdb_model = get_model_with_chains(pdb)
-    chains_seq, _ = get_seq_aa(pdb_model)
-    chains_seq = "/".join(chains_seq)
-    with open("temp_alignment.ali", "w") as ali_file:
-        ali_file.write(">P1;{}_relaxed\n".format(pdb_name))
-        ali_file.write("sequence:{}:::::::0.00: 0.00\n".format(pdb_name))
-        ali_file.write("{}*\n".format(chains_seq))
-
-    env = environ()
-    aln = alignment(env)
-    mdl = model(env, file=pdb)
-    aln.append_model(mdl, align_codes=pdb, atom_files=pdb)
-    aln.append(file="temp_alignment.ali", align_codes="{}_relaxed".format(pdb_name))
-    aln.align2d()
-    aln.write(file="alignment_for_modeller.ali", alignment_format='PIR')
-
-
-def relax_pdb(pdb):
-    """
-    reconstruct side chains using modeller
-    """
-    log.none()
-    log.level(output=0, notes=0, warnings=0, errors=0, memory=0)
-    make_alignment_file(pdb)
-
-    # log.verbose()
-    env = environ()
-
-    # directories for input atom files
-    env.io.atom_files_directory = ['.', '../atom_files']
-
-    a = automodel(env, alnfile='alignment_for_modeller.ali', knowns=pdb,
-                  sequence="{}_relaxed".format(pdb_name))
-    a.starting_model = 1
-    a.ending_model = 1
-    a.make()
-
-    # clean temp files
-    for file in os.listdir(os.getcwd()):
-        if file[-3:] in ['001', 'rsr', 'csh', 'ini', 'ali', 'sch']:
-            os.remove(file)
-    os.rename("{}_relaxed.B99990001.pdb".format(pdb_name),
-              "{}_relaxed.pdb".format(pdb_name))
 
 
 def add_antigen_lines(ag_seq, ag_pred, ag_model, out_file):
@@ -71,14 +18,9 @@ def add_antigen_lines(ag_seq, ag_pred, ag_model, out_file):
     """
     with open("temp1.pdb", "w") as file:
         matrix_to_pdb_antigen(file, ag_seq, ag_pred)
+    pred_ag_model = get_model_with_chains("temp1.pdb")
+    align_pdb_models(ag_model, pred_ag_model, "temp2.pdb")
 
-    pred_ag = PDBParser(QUIET=True).get_structure("temp1.pdb", "temp1.pdb")[0]
-    align = CEAligner()
-    align.set_reference(pred_ag)
-    align.align(ag_model)
-    out_pdb = PDBIO()
-    out_pdb.set_structure(ag_model)
-    out_pdb.save("temp2.pdb")
     with open("temp2.pdb", "r") as file:
         ag_lines = file.readlines()
     out_file.writelines(ag_lines)
@@ -224,10 +166,10 @@ if __name__ == '__main__':
     input_ag_pdb = os.path.abspath(args.ag_pdb) if args.ag_pdb else None
 
     check_input_args()
+    os.environ["PATH"] += os.pathsep + os.path.join(run_dir_path, SURFACE)
 
     if args.modeller:
-        from modeller import *
-        from modeller.automodel import *
+        from relax_pdb import relax_pdb
 
     start = timer()
     dock_and_fold_batch(args.ab_fasta, os.path.abspath(args.ag_pdb), args.antigen_chains, dock_model, ab_score_model,
