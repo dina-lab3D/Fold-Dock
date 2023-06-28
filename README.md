@@ -1,19 +1,16 @@
 # Fold&Dock
 
-<p align="center"><img src="https://drive.google.com/uc?id=1FUTKK5IZPNxNvi-aHA5vcQ0Pe_ba4B6h" width="1000" /></p>
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dina-lab3D/Fold-Dock/blob/main/Fold_Dock.ipynb)
 
-<p align="center"><img src="https://drive.google.com/uc?id=1xWMqarIhJb2IbBMqOnuS72a0a7eUgbw9" width="1000" />
-<p align="center"><img src="http://i.stack.imgur.com/SBv4T.gif" alt="this slowpoke moves"  width="250" />
+<p align="center"><img src="https://github.com/dina-lab3D/Fold-Dock/blob/main/Images/FoldDock_architecture.png" width="750" /></p>
 
-
-Fold&Dock - a rapid modeling tool for antibody-antigen and nanobody-antigen complexes. 
+**Fold&Dock** - a rapid modeling tool for antibody-antigen and nanobody-antigen complexes. 
 
 for citations, please cite our paper: [End to end accurate and high throughput modeling of antibody antigen complexes](https://www.mlsb.io/papers_2022/End_to_end_accurate_and_high_throughput_modeling_of_antibody_antigen_complexes.pdf)
 
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dina-lab3D/Fold-Dock/blob/main/Fold_Dock.ipynb)
 
-How to run Fold&Dock from google Colaboratory:
+## How to run Fold&Dock from google Colaboratory:
 
     1. Open the Colab notebook (Fold_Dock.ipynb, link above).
     2. Select protein type (Nb/mAb heavy chain or TCR VB).
@@ -22,7 +19,10 @@ How to run Fold&Dock from google Colaboratory:
     5. Select whether or not you want to reconstruct the side chains using modeller (requires license - https://salilab.org/modeller/).
     6. Press the 'Run all' option.
 
-How to run Fold&Dock locally:
+<p align="center"><img src="https://github.com/dina-lab3D/Fold-Dock/blob/main/Images/FoldDock_movie.gif" width="500" /></p>
+
+
+## How to run Fold&Dock locally:
 
     1. Clone the git repository : git clone "https://github.com/dina-lab3D/NanoNet"
     2. Make sure you have the following libraries installed in your environment:
@@ -46,8 +46,10 @@ How to run Fold&Dock locally:
                     -c <path to Scwrl4 executable>: run side chains reconstruction using scwrl, default is False. Output it to a pdb file named '<record name>_nanonet_full.pdb'
                     -t : use this parameter for TCR V-beta modeling, default is False
 
-Running times for 1,000 structures on a single standard CPU: 
+## Approximate running times for 1,000 antibody-antigen complexes (min): 
 
-only backbone + Cb - less than 15 seconds (For better preformance use GPU and cuda).
-backbone + SCWRL - about 20 minutes. 
-backbone + Modeller - about 80 minutes.
+|               | without modeller | with modeller  |
+| ------------- |:----------------:| --------------:|
+| CPU           | 0                |      0         |
+| GPU           | 0                |   0            |
+
