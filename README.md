@@ -2,7 +2,8 @@
 
 <p align="center"><img src="https://drive.google.com/uc?id=1FUTKK5IZPNxNvi-aHA5vcQ0Pe_ba4B6h" width="1000" /></p>
 
-<p align="center"><video width="320" height="240" source src=https://drive.google.com/uc?export=preview&id=16PWoNwqrBcXgWA4AnzX3VEto6pswJVs6 type="video/mp4">
+<p align="center"><img src="https://drive.google.com/uc?id=1xWMqarIhJb2IbBMqOnuS72a0a7eUgbw9" width="1000" />
+<p align="center"><img src="http://i.stack.imgur.com/SBv4T.gif" alt="this slowpoke moves"  width="250" />
 
 
 Fold&Dock - a rapid modeling tool for antibody-antigen and nanobody-antigen complexes. 
