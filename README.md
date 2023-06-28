@@ -13,20 +13,48 @@ for citations, please cite our paper: [End to end accurate and high throughput m
 ## How to run Fold&Dock from google Colaboratory:
 
     1. Open the Colab notebook (Fold_Dock.ipynb, link above).
-    2. Select protein type (Nb/mAb heavy chain or TCR VB).
-    3. Select input type (sequence (String) or path to a fasta file)
-    4. Provide a Nb sequence/fasta (NanoNet will preduce a model for each entry in the fasta file).
-    5. Select whether or not you want to reconstruct the side chains using modeller (requires license - https://salilab.org/modeller/).
-    6. Press the 'Run all' option.
+    
+    2. Input antibody sequence
+    
+        - Select antibody input type (a fasta file or an antibody sequence). 
+          Separate the light and heavy chains with ':' in your input sequence.
+          To model multiple antibody sequences for a given antigen in a single run upload a fasta file with multiple antibody sequences.
+        - Run this cell to upload your fasta file (if chosen this option).
+          
+    3. Input antigen structure
+    
+        - If you want to preform docking to a given antigen structure in addition to antibody folding, select the option 'do_docking'.
+        - If you want to preform docking only for specific chains of the PDB file, specify them in the format 'ABC' for chains A,B,C.
+        - Run this cell to upload your antigen pdb file (if chosen the option 'do_docking')
+        
+    4. Advanced settings
+    
+        - Select the number of best scoring complexes to create PDB files for (with an antigen this value can be between 0-len(antigen), 
+          without an antigen this value can be either 0 or 1)
+        - You have the option to relax the structures and reconstruct the side chains using MODELLER. 
+          To do so you need a licese key which  can be obtained from here: https://salilab.org/modeller/
+        - You have the option to visualize the best scoring model and select the verbose of the program.
+        
+    5. Saving options
+    
+        - You can select the output directory and whether or not you want to save the results to your drive.
+        
+    6. Run the other cells without changes.
 
 <p align="center"><img src="https://github.com/dina-lab3D/Fold-Dock/blob/main/Images/FoldDock_movie.gif" width="500" /></p>
 
 
 ## How to run Fold&Dock locally:
 
-    1. Clone the git repository : git clone "https://github.com/dina-lab3D/NanoNet"
+    1. Clone the git repository : git clone "https://github.com/dina-lab3D/Fold-Dock"
     2. Make sure you have the following libraries installed in your environment:
-
+    
+            - timeit
+            - logging
+            - argparse
+            - pandas
+            - subprocess
+            - scipy
             - numpy
             - tensorflow (2.4.0 or higher)
             - Bio (1.8.0 or higher)
@@ -34,17 +62,17 @@ for citations, please cite our paper: [End to end accurate and high throughput m
 
     3. Run the following command (with python 3):
 
-            python NanoNet.py <fasta file path>
-
-            this will produce a backbone + cb pdb named '<record name>_nanonet_backbone_cb.pdb' for each record in the fasta file.
+            python fold_dock.py <antibody fasta file path>
 
             options:
 
-                    -s : write all the models into a single PDB file, separated with MODEL and ENDMDL (reduces running time when predicting many structures), default is False.
-                    -o <output directory> : path to a directory to put the generated models in, default is './NanoNetResults'
-                    -m : run side chains reconstruction using modeller, default is False. Output it to a pdb file named '<record name>_nanonet_full_relaxed.pdb'
-                    -c <path to Scwrl4 executable>: run side chains reconstruction using scwrl, default is False. Output it to a pdb file named '<record name>_nanonet_full.pdb'
-                    -t : use this parameter for TCR V-beta modeling, default is False
+                    -a <antigen_pdb>: pdb file with the antigen structure for docking.
+                    -c <antigen_chains>: which antigen chains to consider for docking, for example ABC, (default: All chains in the given antigen_pdb file)
+                    -o <output directory> : path to a directory to put the generated models in, default is './Results'
+                    -m : run side chains reconstruction using modeller on the structures, default is False. 
+                    -t <top_n>: number of models to generate for each antibody sequence (0-len(antigen)), default is 5.
+                    -v <verbose>: whether or not to print the program progress, default is 1 (print). for a quiet run use -v 0.
+                    
 
 ## Approximate running times for 1,000 antibody-antigen complexes (min): 
 
