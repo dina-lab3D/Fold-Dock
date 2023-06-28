@@ -171,8 +171,8 @@ if __name__ == '__main__':
     input_ag_pdb = os.path.abspath(args.ag_pdb) if args.ag_pdb else None
 
     check_input_args()
-    if run_dir_path not in os.environ["PATH"]:
-        os.environ["PATH"] += os.pathsep + run_dir_path
+    if os.path.join(run_dir_path, "surfaceResidues") not in os.environ["PATH"]:
+        os.environ["PATH"] += os.pathsep + os.path.join(run_dir_path, "surfaceResidues")
 
     if args.modeller:
         from relax_pdb import relax_pdb
