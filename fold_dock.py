@@ -103,7 +103,7 @@ def dock_and_fold_batch(ab_fasta, ag_pdb, antigen_chains, dock, ab_score,
     # get antigen input for the network
     print("Making the antigen input")
     ag_model = get_model_with_chains(ag_pdb, antigen_chains)
-    ag_seq, ag_input = get_antigen_input(ag_model, known_epitope=None)
+    ag_seq, ag_input = get_antigen_input(ag_model, surface_executable=surface_executable, known_epitope=None)
 
     # change to output directory
     if not os.path.exists(out_dir):
@@ -171,8 +171,7 @@ if __name__ == '__main__':
     input_ag_pdb = os.path.abspath(args.ag_pdb) if args.ag_pdb else None
 
     check_input_args()
-    if os.path.join(run_dir_path, "surfaceResidues") not in os.environ["PATH"]:
-        os.environ["PATH"] += os.pathsep + os.path.join(run_dir_path, "surfaceResidues")
+    surface_executable = os.path.join(run_dir_path, SURFACE, SURFACE)
 
     if args.modeller:
         from relax_pdb import relax_pdb
