@@ -10,7 +10,7 @@ AA_DICT = {"A": 0, "C": 1, "D": 2, "E": 3, "F": 4, "G": 5, "H": 6, "I": 7, "K": 
            "Q": 13, "R": 14, "S": 15, "T": 16, "W": 17, "Y": 18, "V": 19, "X": 20} # ,  "-": 21
 MODIFIED_AA = modres
 THREE_TO_ONE = longer_names
-SURFACE = "/content/Fold-Dock/surfaceResidues"  # surface <pdb>
+SURFACE = "surfaceResidues"  # surface <pdb>
 MAX_SURFACE_VALUE = 300
 
 
