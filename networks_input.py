@@ -1,10 +1,10 @@
-from get_torsion import GetTorsion, CHIS
 from scipy.spatial.transform import Rotation as R
 import numpy as np
-from utils import AA_DICT, get_seq_aa
+import tensorflow as tf
+from get_torsion import GetTorsion, CHIS
+from utils import AA_DICT, get_seq_aa, get_pdb_surface, separate_antibody_chains
 
 MAX_LENGTH_ANTIGEN = 600
-MAX_SURFACE_VALUE = 300
 CENTER_TRIANGLE = [[-0.826, -0.93966667, -0.09566667], [0.177,0.02833333,-0.53166667],[0.649,0.91133333, 0.62733333]]
 ANTIGEN_FEATURE_NUM = len(AA_DICT) + 1 + 1 + 1  # surface column + docking column + contact column
 MIN_LENGTH_ANTIGEN = 5
@@ -173,7 +173,7 @@ def get_antigen_input(antigen_model, known_epitope=None):
     get the antigen input for the docking network
     """
 
-    if not ag_pdb:  # only folding, no docking
+    if not antigen_model:  # only folding, no docking
         return None, np.zeros((1, MAX_LENGTH_ANTIGEN + 1, 15 + 15 + ANTIGEN_FEATURE_NUM))
 
 

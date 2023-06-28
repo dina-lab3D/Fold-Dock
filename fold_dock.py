@@ -11,6 +11,7 @@ from matrix_to_pdb import matrix_to_pdb_antibody, matrix_to_pdb_antigen
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 import tensorflow as tf
+logging.getLogger('tensorflow').disabled = True
 
 
 def add_antigen_lines(ag_seq, ag_pred, ag_model, out_file):
@@ -33,12 +34,11 @@ def add_antigen_lines(ag_seq, ag_pred, ag_model, out_file):
 def make_pdb_files(out_file_name, ab_seq, ab_pred, ag_seq=None, ag_model=None, ag_pred=None, run_modeller=False):
     """
     """
-    has_antigen = ag_seq is not None and ag_pdb is not None
-    heavy_seq, light_seq = antibody_sequence(ab_seq)
+    has_antigen = ag_seq is not None and ag_model is not None
 
     # write the antibody model to the pdb file
     with open(out_file_name, "w") as file:
-        matrix_to_pdb_antibody(file, heavy_seq, light_seq, ab_pred, write_end= not has_antigen)
+        matrix_to_pdb_antibody(file, ab_seq, ab_pred, write_end= not has_antigen)
         # We also did docking
         if has_antigen:
             add_antigen_lines(ag_seq, ag_pred, ag_model, file)
@@ -56,7 +56,7 @@ def dock_and_fold(ab_sequence, ag_model, ag_seq, ag_input, dock, ab_score,
     """
     runs Fold&Dock structure predictions
     """
-    print("Making input for the folding and docking network")
+    print("Making the antibody input")
     ab_input = get_antibody_input(ab_sequence.seq)
     ab_input = np.array([np.array(ab_input) for _ in range(len(ag_input))])
 
@@ -95,12 +95,13 @@ def dock_and_fold_batch(ab_fasta, ag_pdb, antigen_chains, dock, ab_score,
         sequences.append(sequence)
 
     # load models
-    logging.getLogger('tensorflow').disabled = True
+    print("Loading the trained models")
     dock = tf.keras.models.load_model(dock, compile=False)
     ab_score = tf.keras.models.load_model(ab_score, compile=False)
     nb_score = tf.keras.models.load_model(nb_score, compile=False)
 
     # get antigen input for the network
+    print("Making the antigen input")
     ag_model = get_model_with_chains(ag_pdb, antigen_chains)
     ag_seq, ag_input = get_antigen_input(ag_model, known_epitope=None)
 
@@ -116,7 +117,7 @@ def dock_and_fold_batch(ab_fasta, ag_pdb, antigen_chains, dock, ab_score,
         os.chdir(sequence.id)
 
         start_ = timer()
-        print("Working on sequence {}/{}".format(i, len(sequences)))
+        print("Working on sequence {}/{}".format(i+1, len(sequences)))
         dock_and_fold(sequence, ag_model, ag_seq, ag_input, dock, ab_score, nb_score, topn, run_modeller)
         end_ = timer()
         print("Finished working on sequence {}/{} with id {}, running time: {}".format(i+1, len(sequences), sequence.id, end_-start_))
@@ -130,7 +131,7 @@ def check_input_args():
     if args.ag_pdb and not os.path.exists(args.ag_pdb):
         print("Can't find the given antigen pdb file: '{}', aborting.".format(args.ag_pdb), file=sys.stderr)
         exit(1)
-    if args.ag_pdb and not args.antigen_chains.isalpha():
+    if args.ag_pdb and args.antigen_chains and not args.antigen_chains.isalpha():
         print("Antigen pdb chains should contain only a-z,A-Z characters: '{}', aborting.".format(args.antigen_chains), file=sys.stderr)
         exit(1)
     if not os.path.exists(dock_model) or not os.path.exists(ab_score_model) or not os.path.exists(nb_score_model):
@@ -170,7 +171,8 @@ if __name__ == '__main__':
     input_ag_pdb = os.path.abspath(args.ag_pdb) if args.ag_pdb else None
 
     check_input_args()
-    os.environ["PATH"] += os.pathsep + os.path.join(run_dir_path, SURFACE)
+    if run_dir_path not in os.environ["PATH"]:
+        os.environ["PATH"] += os.pathsep + run_dir_path
 
     if args.modeller:
         from relax_pdb import relax_pdb
