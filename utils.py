@@ -105,14 +105,14 @@ def separate_antibody_chains(antibody_sequence):
     return heavy_seq, light_seq
 
 
-def get_pdb_surface(pdb_model):
+def get_pdb_surface(pdb_model, surface_executable=SURFACE):
     """
     calculate the antigen surface values
     """
     out_pdb = PDBIO()
     out_pdb.set_structure(pdb_model)
     out_pdb.save("surface.pdb")
-    surface_values = str(sp.run("{} surface.pdb".format(SURFACE), shell=True, capture_output=True).stderr.decode("utf-8")).split("\n")[9:-1]
+    surface_values = str(sp.run("{} surface.pdb".format(surface_executable), shell=True, capture_output=True).stderr.decode("utf-8")).split("\n")[9:-1]
     os.remove("surface.pdb")
     return [float(i)/MAX_SURFACE_VALUE for i in surface_values if (i != 'double free or corruption (!prev)' and 'surface' not in i and 'area' not in i)]
 
