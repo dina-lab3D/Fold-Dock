@@ -66,7 +66,7 @@ def get_seq_aa(pdb_model, only_ca=False):
             chain_aa.append(residue)
         seq.append(chain_seq)
         aa_residues.append(chain_aa)
-        return seq, aa_residues
+    return seq, aa_residues
 
 
 def get_model_with_chains(pdb, chain_letters=None):
