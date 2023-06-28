@@ -2,7 +2,7 @@ from scipy.spatial.transform import Rotation as R
 import numpy as np
 import tensorflow as tf
 from get_torsion import GetTorsion, CHIS
-from utils import AA_DICT, get_seq_aa, get_pdb_surface, separate_antibody_chains
+from utils import AA_DICT, get_seq_aa, get_pdb_surface, separate_antibody_chains, SURFACE
 
 MAX_LENGTH_ANTIGEN = 600
 CENTER_TRIANGLE = [[-0.826, -0.93966667, -0.09566667], [0.177,0.02833333,-0.53166667],[0.649,0.91133333, 0.62733333]]
@@ -110,7 +110,7 @@ def get_antibody_one_hot(heavy_seq, light_seq=None):
     return seq_matrix
 
 
-def get_antigen_one_hot_xyz(antigen_model, known_epitope=None):
+def get_antigen_one_hot_xyz(antigen_model, surface_executable=SURFACE, known_epitope=None):
     """
     get antigen one hot and xyz coordinates
     """
@@ -124,7 +124,7 @@ def get_antigen_one_hot_xyz(antigen_model, known_epitope=None):
     if known_epitope is not None:
         assert len(known_epitope) == len(antigen_residues)
 
-    antigen_surface = get_pdb_surface(antigen_model)
+    antigen_surface = get_pdb_surface(antigen_model, surface_executable=surface_executable)
     if len(antigen_seq) != len(antigen_surface):
         raise ValueError(f"Antigen sequence length and surface don't match!: {len(antigen_seq)}, {len(antigen_surface)}")
 
@@ -168,7 +168,7 @@ def get_antigen_one_hot_xyz(antigen_model, known_epitope=None):
     return antigen_seq, patches_one_hot, patches_xyz, patches_side_chain_xyz, patches_centers
 
 
-def get_antigen_input(antigen_model, known_epitope=None):
+def get_antigen_input(antigen_model, surface_executable=SURFACE, known_epitope=None):
     """
     get the antigen input for the docking network
     """
@@ -177,7 +177,7 @@ def get_antigen_input(antigen_model, known_epitope=None):
         return None, np.zeros((1, MAX_LENGTH_ANTIGEN + 1, 15 + 15 + ANTIGEN_FEATURE_NUM))
 
 
-    antigen_seq, patches_one_hot, patches_xyz, patches_side_chain_xyz, patches_centers = get_antigen_one_hot_xyz(antigen_model=antigen_model, known_epitope=known_epitope)
+    antigen_seq, patches_one_hot, patches_xyz, patches_side_chain_xyz, patches_centers = get_antigen_one_hot_xyz(antigen_model=antigen_model, surface_executable=surface_executable, known_epitope=known_epitope)
     patches_centered_xyz, patches_centered_sides = move_to_global_frame(patches_xyz, patches_side_chain_xyz, patches_centers)
 
     antigen_x = [np.concatenate((i, j, k), axis=-1) for i, j, k in zip(patches_one_hot, patches_centered_xyz, patches_centered_sides)]
