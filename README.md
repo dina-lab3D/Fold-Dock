@@ -2,7 +2,7 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dina-lab3D/Fold-Dock/blob/main/Fold_Dock.ipynb)
 
-<p align="center"><img src="https://github.com/dina-lab3D/Fold-Dock/blob/main/Images/FoldDock_architecture.png" width="750" /></p>
+<p align="center"><img src="https://github.com/dina-lab3D/Fold-Dock/blob/main/Images/FoldDock_architecture.png" width="900" /></p>
 
 **Fold&Dock** - a rapid modeling tool for antibody-antigen and nanobody-antigen complexes. 
 
@@ -41,8 +41,6 @@ for citations, please cite our paper: [End to end accurate and high throughput m
         
     6. Run the other cells without changes.
 
-<p align="center"><img src="https://github.com/dina-lab3D/Fold-Dock/blob/main/Images/FoldDock_movie.gif" width="500" /></p>
-
 
 ## How to run Fold&Dock locally:
 
@@ -80,4 +78,8 @@ for citations, please cite our paper: [End to end accurate and high throughput m
 | ------------- |:----------------:| --------------:|
 | CPU           | 0                |      0         |
 | GPU           | 0                |   0            |
+
+
+<p align="center"><img src="https://github.com/dina-lab3D/Fold-Dock/blob/main/Images/FoldDock_movie.gif" width="700" /></p>
+
 
