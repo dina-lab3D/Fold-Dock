@@ -76,9 +76,9 @@ def get_model_with_chains(pdb, chain_letters=None):
         return None
     model = PDBParser(QUIET=True).get_structure(pdb, pdb)[0]
     if chain_letters is not None:
-        for chain in model:
-            if chain.get_id() not in chain_letters:
-                model.detach_child(chain.get_id())
+        for chain_id in [chain.get_id() for chain in model]:
+            if chain_id not in chain_letters:
+                model.detach_child(chain_id)
 
     # The model doesnt have any of the requested chain ids
     if len(model) == 0:
