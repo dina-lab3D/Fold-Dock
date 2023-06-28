@@ -4,11 +4,20 @@ from utils import get_model_with_chains, get_seq_aa
 import os
 
 
-def make_alignment_file(pdb, pdb_name):
+def my_automodel(segment_ids):
+    """
+    """
+    class MyAutoModel(automodel):
+        def special_patches(self, aln):
+            # Rename the chains
+            self.rename_segments(segment_ids=segment_ids)
+    return MyAutoModel
+
+
+def make_alignment_file(pdb_model, pdb, pdb_name):
     """
     makes alignment file for modeller
     """
-    pdb_model = get_model_with_chains(pdb)
     chains_seq, _ = get_seq_aa(pdb_model)
     chains_seq = "/".join(chains_seq)
     with open("temp_alignment.ali", "w") as ali_file:
@@ -33,7 +42,9 @@ def relax_pdb(pdb):
     log.level(output=0, notes=0, warnings=0, errors=0, memory=0)
 
     pdb_name = pdb.split(".")[0].replace("unrelaxed", "relaxed")
-    make_alignment_file(pdb, pdb_name)
+    pdb_model = get_model_with_chains(pdb)
+
+    make_alignment_file(pdb_model, pdb, pdb_name)
 
     # log.verbose()
     env = environ()
@@ -41,8 +52,7 @@ def relax_pdb(pdb):
     # directories for input atom files
     env.io.atom_files_directory = ['.', '../atom_files']
 
-    a = automodel(env, alnfile='alignment_for_modeller.ali', knowns=pdb,
-                  sequence=pdb_name)
+    a = my_automodel([chain.get_id() for chain in pdb_model])(env, alnfile='alignment_for_modeller.ali', knowns=pdb, sequence=pdb_name)
     a.starting_model = 1
     a.ending_model = 1
     a.make()
