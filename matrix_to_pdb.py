@@ -1,4 +1,4 @@
-from Bio.PDB.Polypeptide import one_to_three
+from Bio.Data.PDBData import protein_letters_1to3
 from utils import separate_antibody_chains, three_to_one
 from get_torsion import CHIS
 from networks_input import HEAVY_MAX_LENGTH
@@ -29,7 +29,7 @@ def matrix_to_pdb_antibody(pdb_file, ab_seq, coord_matrix, write_end=True, conf=
         k = 1
         for aa in range(len(heavy_light_seq)):
             second_space = (4 - len(str(i))) * " "
-            three_letter_code = one_to_three(heavy_light_seq[aa]) if heavy_light_seq[aa] != "X" else "UNK"
+            three_letter_code = protein_letters_1to3[heavy_light_seq[aa]] if heavy_light_seq[aa] != "X" else "UNK"
             backbone = ["N", "CA", "C", "O", "CB"]
             chis = []
             for chi in ["chi1", "chi2", "chi3", "chi4", "chi5"]:
@@ -65,7 +65,7 @@ def matrix_to_pdb_antigen(pdb_file, antigen_seq, coord_matrix, write_end=True):
     k = 1
     for aa in range(len(antigen_seq)):
         second_space = (4 - len(str(i))) * " "
-        three_letter_code = one_to_three(antigen_seq[aa]) if antigen_seq[aa] != "X" else "UNK"
+        three_letter_code = protein_letters_1to3[antigen_seq[aa]] if antigen_seq[aa] != "X" else "UNK"
         backbone = ["N", "CA", "C", "O", "CB"]
         chis = []
         for chi in ["chi1", "chi2", "chi3", "chi4", "chi5"]:
