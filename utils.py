@@ -5,6 +5,7 @@ from amino_acids import modres, longer_names
 from Bio.PDB.cealign import CEAligner
 from Bio.PDB.PDBIO import PDBIO
 import os
+import re 
 
 AA_DICT = {"A": 0, "C": 1, "D": 2, "E": 3, "F": 4, "G": 5, "H": 6, "I": 7, "K": 8, "L": 9, "M": 10, "N": 11, "P": 12,
            "Q": 13, "R": 14, "S": 15, "T": 16, "W": 17, "Y": 18, "V": 19, "X": 20} # ,  "-": 21
@@ -13,6 +14,10 @@ THREE_TO_ONE = longer_names
 SURFACE = "surfaceResidues"  # surface <pdb>
 MAX_SURFACE_VALUE = 300
 
+def is_float(f_string):
+    if re.match(r'^-?\d+(?:\.\d+)$', f_string) is None:
+        return False
+    return True
 
 def seq_iterator(fasta_file_path):
     """
@@ -114,6 +119,6 @@ def get_pdb_surface(pdb_model, surface_executable=SURFACE):
     out_pdb.save("surface.pdb")
     surface_values = str(sp.run("{} surface.pdb".format(surface_executable), shell=True, capture_output=True).stderr.decode("utf-8")).split("\n")[9:-1]
     os.remove("surface.pdb")
-    return [float(i)/MAX_SURFACE_VALUE for i in surface_values if (i != 'double free or corruption (!prev)' and 'surface' not in i and 'area' not in i)]
+    return [float(i)/MAX_SURFACE_VALUE for i in surface_values if is_float(i)]
 
 
