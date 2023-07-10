@@ -115,12 +115,15 @@ def get_antigen_one_hot_xyz(antigen_model, surface_executable=SURFACE, known_epi
     get antigen one hot and xyz coordinates
     """
     antigen_seq_list, antigen_residues_list = get_seq_aa(antigen_model, only_ca=True)
-
+    
     antigen_seq = "".join(antigen_seq_list)
     antigen_residues = []
     for chain_aa in antigen_residues_list:
         antigen_residues += chain_aa
 
+    if len(antigen_seq) > MAX_LENGTH_ANTIGEN or len(antigen_seq) < MIN_LENGTH_ANTIGEN:
+        raise ValueError(f"The Input antigen should have between 5 to 600 amino acids, the provided antigen has {len(antigen_seq)} amino acids.")
+    
     if known_epitope is not None:
         assert len(known_epitope) == len(antigen_residues)
 
