@@ -75,14 +75,14 @@ for citations, please cite our paper: [End to end accurate and high throughput m
 ## Approximate running times for a fasta file with a single antibody sequence (min, creating PDB files top 5 models): 
 
 |               | without modeller | with modeller  |
-| ------------- |:----------------:| --------------:|
+| ------------- |:----------------:| :--------------:|
 | CPU           |      3-5         |      8-10      |
 | GPU           |      1-2         |      3-7       |
 
 ## Approximate running times for a fasta file with 100 antibody sequences (min, creating PDB files top 5 models): 
 
 |               | without modeller | with modeller  |
-| ------------- |:----------------:| --------------:|
+| ------------- |:----------------:| :--------------:|
 | CPU           | 0                |      0         |
 | GPU           | 20-30            |   0            |
 
