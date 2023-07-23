@@ -106,12 +106,13 @@ def dock_and_fold_batch(ab_fasta, ag_pdb, antigen_chains, dock, ab_score,
     # get antigen input for the network
     verbose_print("Making the antigen input")
     ag_model = get_model_with_chains(ag_pdb, antigen_chains)
-    ag_seq, ag_input = get_antigen_input(ag_model, surface_executable=surface_executable, known_epitope=None)
 
     # change to output directory
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
     os.chdir(out_dir)
+
+    ag_seq, ag_input = get_antigen_input(ag_model, surface_executable=surface_executable, known_epitope=None)
 
     for i, sequence in enumerate(sequences):
 
