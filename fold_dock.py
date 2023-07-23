@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import pandas as pd
 import logging
+import zipfile
 from timeit import default_timer as timer
 from utils import *
 from networks_input import get_antigen_input, get_antibody_input, convert_dock_input_to_score_input, MAX_LENGTH_ANTIGEN
@@ -141,6 +142,9 @@ def check_input_args():
     if args.antigen_chains and ("L" in args.antigen_chains or "H" in args.antigen_chains):
         print("Antigen pdb chains should not contain 'L' or 'H' ids, they are reserved for the modeled antibody, aborting.")
         exit(1)
+    if os.path.exists(dock_model + ".zip") and not os.path.exists(dock_model):
+        with zipfile.ZipFile(dock_model + ".zip", 'r') as zip_ref:
+            zip_ref.extractall(dock_model)
     if not os.path.exists(dock_model) or not os.path.exists(ab_score_model) or not os.path.exists(nb_score_model):
         print("Can't find the trained models, aborting.", file=sys.stderr)
         exit(1)
