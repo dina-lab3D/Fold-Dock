@@ -72,19 +72,21 @@ for citations, please cite our paper: [End to end accurate and high throughput m
                     -v <verbose>: whether or not to print the program progress, default is 1 (print). for a quiet run use -v 0.
                     
 
-## Approximate running times for a fasta file with a single antibody sequence (min, creating PDB files top 5 models): 
+## Approximate running times (creating PDB files top 5 models): 
+
+### single antibody sequence (minutes)
 
 |               | without modeller | with modeller  |
 | ------------- |:----------------:| :--------------:|
 | CPU           |      3-5         |      8-10      |
 | GPU           |      1-2         |      3-7       |
 
-## Approximate running times for a fasta file with 100 antibody sequences (min, creating PDB files top 5 models): 
+### 100 antibody sequences (hours): 
 
 |               | without modeller | with modeller  |
 | ------------- |:----------------:| :--------------:|
-| CPU           | 0                |      0         |
-| GPU           | 20-30            |   0            |
+| CPU           | 3                |      12         |
+| GPU           | 0.33-0.5         |      6          |
 
 
 <p align="center"><img src="https://github.com/dina-lab3D/Fold-Dock/blob/main/Images/FoldDock_movie.gif" width="700" /></p>
