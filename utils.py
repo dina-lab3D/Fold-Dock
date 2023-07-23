@@ -5,7 +5,6 @@ from amino_acids import modres, longer_names
 from Bio.PDB.cealign import CEAligner
 from Bio.PDB.PDBIO import PDBIO
 import os
-import re 
 
 AA_DICT = {"A": 0, "C": 1, "D": 2, "E": 3, "F": 4, "G": 5, "H": 6, "I": 7, "K": 8, "L": 9, "M": 10, "N": 11, "P": 12,
            "Q": 13, "R": 14, "S": 15, "T": 16, "W": 17, "Y": 18, "V": 19, "X": 20} # ,  "-": 21
@@ -15,9 +14,11 @@ SURFACE = "surfaceResidues"  # surface <pdb>
 MAX_SURFACE_VALUE = 300
 
 def is_float(f_string):
-    if re.match(r'^-?\d+(?:\.\d+)$', f_string) is None:
+    try:
+        float(f_string)
+        return True
+    except ValueError:
         return False
-    return True
 
 def seq_iterator(fasta_file_path):
     """
@@ -59,13 +60,12 @@ def get_seq_aa(pdb_model, only_ca=False):
     """
     aa_residues = []
     seq = []
-
     for chain in pdb_model:
         chain_aa = []
         chain_seq = ""
         for residue in chain:
             aa = residue.get_resname()
-            if not is_aa(aa) or not three_to_one(aa) or (only_ca and not residue.has_id('CA')):
+            if not three_to_one(aa) or (only_ca and not residue.has_id('CA')):
                 continue
             chain_seq += three_to_one(aa)
             chain_aa.append(residue)
