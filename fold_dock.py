@@ -171,7 +171,7 @@ def parse_arguments():
     parser.add_argument("-t", "--topn",
                         help="Number of models to generate for each antibody sequence (0-len(antigen)), (default: 5)",
                         default=5,
-                        type=int, choices=range(0, MAX_LENGTH_ANTIGEN))
+                        type=int, choices=range(0, MAX_LENGTH_ANTIGEN+1))
     parser.add_argument("-v", "--verbose",
                         help="Printing options",
                         default=1,
