@@ -86,7 +86,7 @@ for citations, please cite our paper: [End to end accurate and high throughput m
 |               | without modeller | with modeller  |
 | ------------- |:----------------:| :--------------:|
 | CPU           | 3                |      12         |
-| GPU           | 0.33-0.5         |      6          |
+| GPU           | 0.33-0.5         |      7          |
 
 
 <p align="center"><img src="https://github.com/dina-lab3D/Fold-Dock/blob/main/Images/FoldDock_movie.gif" width="700" /></p>
