@@ -5,6 +5,7 @@ from amino_acids import modres, longer_names
 from Bio.PDB.cealign import CEAligner
 from Bio.PDB.PDBIO import PDBIO
 import os
+from abnumber import Chain
 
 AA_DICT = {"A": 0, "C": 1, "D": 2, "E": 3, "F": 4, "G": 5, "H": 6, "I": 7, "K": 8, "L": 9, "M": 10, "N": 11, "P": 12,
            "Q": 13, "R": 14, "S": 15, "T": 16, "W": 17, "Y": 18, "V": 19, "X": 20} # ,  "-": 21
@@ -100,6 +101,16 @@ def align_pdb_models(model, target, out_file_name):
     out_pdb = PDBIO()
     out_pdb.set_structure(model)
     out_pdb.save(out_file_name)
+
+
+def get_var_region(ab_chain_seq):
+    if ab_chain_seq:
+        try:
+            ab_chain_seq = Chain(ab_chain_seq, scheme='imgt').seq
+            print(ab_chain_seq)
+        except Exception as e:
+            pass
+    return ab_chain_seq
 
 
 def separate_antibody_chains(antibody_sequence):
