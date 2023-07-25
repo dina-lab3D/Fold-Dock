@@ -187,12 +187,11 @@ def get_antigen_input(antigen_model, surface_executable=SURFACE, known_epitope=N
     return antigen_seq, np.array(antigen_x)
 
 
-def get_antibody_input(antibody_sequence):
+def get_antibody_input(var_heavy_seq, var_light_seq):
     """
     get the antibody input for the docking network
     """
-    heavy_seq, light_seq = separate_antibody_chains(antibody_sequence)
-    antibody_x = get_antibody_one_hot(heavy_seq, light_seq)
+    antibody_x = get_antibody_one_hot(var_heavy_seq, var_light_seq)
     return antibody_x
 
 
