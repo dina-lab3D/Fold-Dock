@@ -32,14 +32,14 @@ def add_antigen_lines(ag_seq, ag_pred, ag_model, out_file):
     os.remove("temp2.pdb")
 
 
-def make_pdb_files(out_file_name, ab_seq, ab_pred, ag_seq=None, ag_model=None, ag_pred=None, run_modeller=False):
+def make_pdb_files(out_file_name, ab_h_seq, ab_l_seq, ab_pred, ag_seq=None, ag_model=None, ag_pred=None, run_modeller=False):
     """
     """
     has_antigen = ag_seq is not None and ag_model is not None
 
     # write the antibody model to the pdb file
     with open(out_file_name, "w") as file:
-        matrix_to_pdb_antibody(file, ab_seq, ab_pred, write_end= not has_antigen)
+        matrix_to_pdb_antibody(file, ab_h_seq, ab_l_seq, ab_pred, write_end= not has_antigen)
         # We also did docking
         if has_antigen:
             add_antigen_lines(ag_seq, ag_pred, ag_model, file)
@@ -60,7 +60,11 @@ def dock_and_fold(ab_sequence, ag_model, ag_seq, ag_input, dock, ab_score,
     runs Fold&Dock structure predictions
     """
     verbose_print("Making the antibody input")
-    ab_input = get_antibody_input(ab_sequence.seq)
+    heavy_seq, light_seq = separate_antibody_chains(ab_sequence)
+    heavy_seq, light_seq = get_var_region(heavy_seq), get_var_region(light_seq)
+    
+    ab_input = get_antibody_input(heavy_seq, light_seq)
+    
     ab_input = np.array([np.array(ab_input) for _ in range(len(ag_input))])
 
     # Fold, Dock and Score
@@ -70,7 +74,7 @@ def dock_and_fold(ab_sequence, ag_model, ag_seq, ag_input, dock, ab_score,
 
     if ag_model is not None:
         verbose_print("Calculating scores for the antibody-antigen complexes")
-        scores = nb_score.predict([ab_score_input, ag_score_input]) if is_nb(ab_sequence.seq) else ab_score.predict([ab_score_input, ag_score_input])
+        scores = nb_score.predict([ab_score_input, ag_score_input]) if not light_seq else ab_score.predict([ab_score_input, ag_score_input])
         scores = -1 * np.array(scores).flatten()
     else:
         scores = np.array([np.nan])
@@ -84,7 +88,7 @@ def dock_and_fold(ab_sequence, ag_model, ag_seq, ag_input, dock, ab_score,
         verbose_print("Creating PDB files for the top {} models".format(min(topn, len(ranks))))
         for rank, pred_model in enumerate(ranks[:topn]):
             model_file_path = "{}_rank_{}_unrelaxed.pdb".format(ab_sequence.id, rank + 1)
-            make_pdb_files(model_file_path, ab_sequence.seq, pred_ab[pred_model], ag_seq=ag_seq, ag_model=ag_model, ag_pred=pred_ag[pred_model], run_modeller=run_modeller)
+            make_pdb_files(model_file_path, heavy_seq, light_seq, pred_ab[pred_model], ag_seq=ag_seq, ag_model=ag_model, ag_pred=pred_ag[pred_model], run_modeller=run_modeller)
 
 
 def dock_and_fold_batch(ab_fasta, ag_pdb, antigen_chains, dock, ab_score,
