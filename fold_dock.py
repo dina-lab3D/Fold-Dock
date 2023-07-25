@@ -60,7 +60,7 @@ def dock_and_fold(ab_sequence, ag_model, ag_seq, ag_input, dock, ab_score,
     runs Fold&Dock structure predictions
     """
     verbose_print("Making the antibody input")
-    heavy_seq, light_seq = separate_antibody_chains(ab_sequence)
+    heavy_seq, light_seq = separate_antibody_chains(ab_sequence.seq)
     heavy_seq, light_seq = get_var_region(heavy_seq), get_var_region(light_seq)
     
     ab_input = get_antibody_input(heavy_seq, light_seq)
@@ -81,7 +81,7 @@ def dock_and_fold(ab_sequence, ag_model, ag_seq, ag_input, dock, ab_score,
     # get models by rank
     ranks = np.argsort(scores)
     pd.DataFrame({"model": ["{}_rank_{}".format(ab_sequence.id, i+1) for i in range(len(ranks))], "score": scores[ranks]}).to_csv("scores.csv")
-    verbose_print("Finished running Fold&Dock{}".format("" if ag_model is None else ", best comlex model score: " + str(scores[ranks[0]])))
+    verbose_print("Finished running Fold&Dock{}".format("" if ag_model is None else ", best complex model score: " + str(scores[ranks[0]])))
 
     # output models for top n results
     if topn > 0:
