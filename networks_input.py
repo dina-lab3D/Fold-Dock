@@ -2,7 +2,7 @@ from scipy.spatial.transform import Rotation as R
 import numpy as np
 import tensorflow as tf
 from get_torsion import GetTorsion, CHIS
-from utils import AA_DICT, get_seq_aa, get_pdb_surface, separate_antibody_chains, SURFACE, get_var_region
+from utils import AA_DICT, get_seq_aa, get_pdb_surface, separate_antibody_chains, SURFACE
 
 MAX_LENGTH_ANTIGEN = 600
 CENTER_TRIANGLE = [[-0.826, -0.93966667, -0.09566667], [0.177,0.02833333,-0.53166667],[0.649,0.91133333, 0.62733333]]
@@ -192,7 +192,6 @@ def get_antibody_input(antibody_sequence):
     get the antibody input for the docking network
     """
     heavy_seq, light_seq = separate_antibody_chains(antibody_sequence)
-    heavy_seq, light_seq = get_var_region(heavy_seq), get_var_region(light_seq)
     antibody_x = get_antibody_one_hot(heavy_seq, light_seq)
     return antibody_x
 
