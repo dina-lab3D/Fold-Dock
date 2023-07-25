@@ -107,7 +107,6 @@ def get_var_region(ab_chain_seq):
     if ab_chain_seq:
         try:
             ab_chain_seq = Chain(ab_chain_seq, scheme='imgt').seq
-            print(ab_chain_seq)
         except Exception as e:
             pass
     return ab_chain_seq
