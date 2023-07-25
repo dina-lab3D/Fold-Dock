@@ -54,6 +54,7 @@ for citations, please cite our paper: [End to end accurate and high throughput m
             - subprocess
             - scipy
             - numpy
+            - abnumber
             - tensorflow (2.4.0 or higher)
             - Bio (1.8.0 or higher)
             - modeller (optional, only if you want to reconstruct the side chains using modeller, requires license - https://salilab.org/modeller/)
