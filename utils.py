@@ -97,7 +97,7 @@ def align_pdb_models(model, target, out_file_name):
     """
     num_residues = len(list(model.get_residues()))
     if num_residues < 16:
-        align = CEAligner(window_size=num_residues // 2)
+        align = CEAligner(window_size=4)
     else:
         align = CEAligner()
     align.set_reference(target)
