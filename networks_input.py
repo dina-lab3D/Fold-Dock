@@ -1,6 +1,7 @@
 from scipy.spatial.transform import Rotation as R
 import numpy as np
 import tensorflow as tf
+from Bio.Data.PDBData import protein_letters_1to3
 from get_torsion import GetTorsion, CHIS
 from utils import AA_DICT, get_seq_aa, get_pdb_surface, separate_antibody_chains, SURFACE
 
@@ -13,6 +14,8 @@ FEATURE_NUM = len(AA_DICT) + 2 + 1 # amino acids + heavy, light columns + transf
 LIGHT_MAX_LENGTH = 130
 HEAVY_MAX_LENGTH = 150
 MAX_LENGTH = LIGHT_MAX_LENGTH + HEAVY_MAX_LENGTH
+BACKBONE = ["N", "CA", "C", "O", "CB"]
+CHIS_KEYS = sorted([chi_name for chi_name in CHIS.keys() if 'alt' not in chi_name])
 
 
 def get_antigen_one_hot(antigen_seq, antigen_surface):
@@ -78,7 +81,7 @@ def get_antigen_xyz(antigen_seq, antigen_residues):
 
     # get the heavy coordinates
     for i in range(len(antigen_seq)):
-        for j, atom in enumerate(["N", "CA", "C", "O", "CB"]):
+        for j, atom in enumerate(BACKBONE):
             if antigen_seq[i] != "-":
                 if antigen_residues[i].has_id(atom):
                     ag_xyz_matrix[i][3*j:3*j+3] = antigen_residues[i][atom].get_coord()
@@ -195,10 +198,32 @@ def get_antibody_input(var_heavy_seq, var_light_seq):
     return antibody_x
 
 
-def convert_dock_input_to_score_input(ab_dock_input, at_dock_input, dock_output):
+def get_antibody_xyz_mask(var_heavy_seq, var_light_seq):
     """
     """
-    antibody_xyz_mask = tf.expand_dims(tf.math.logical_not(tf.math.reduce_all(tf.math.equal(ab_dock_input, 0), axis=-1))[:,:-1], axis=-1)
+    mask = np.zeros((1, MAX_LENGTH, 30))
+    cb_s = BACKBONE.index("CB") * 3
+
+    for hl_seq, padding in zip([var_heavy_seq, var_light_seq], [0, HEAVY_MAX_LENGTH]):
+        if hl_seq is None:
+            continue
+        for i, aa in enumerate(hl_seq):
+            if aa == 'G':  # GLY aa missing CB atom
+                mask[0, i+padding, 0:cb_s] = 1
+            else:
+                mask[0, i+padding, 0:cb_s+3] = 1
+            three_letter_code = protein_letters_1to3[aa] if aa != "X" else "UNK"
+            for j, chi in enumerate(CHIS_KEYS):
+                if three_letter_code in CHIS[chi]:
+                    chi_s = 15 + (j * 3)
+                    mask[0, i+padding, chi_s:chi_s+3] = 1
+    return mask
+
+
+def convert_dock_input_to_score_input(var_heavy_seq, var_light_seq, ab_dock_input, at_dock_input, dock_output):
+    """
+    """
+    antibody_xyz_mask = get_antibody_xyz_mask(var_heavy_seq, var_light_seq) 
     antigen_xyz_mask = at_dock_input[:, :-1, 24:] != 0.0
 
     pred_ab_ = dock_output["light_orientation"] * tf.cast(antibody_xyz_mask, dtype=tf.float32)
