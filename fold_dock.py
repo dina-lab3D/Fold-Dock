@@ -70,7 +70,7 @@ def dock_and_fold(ab_sequence, ag_model, ag_seq, ag_input, dock, ab_score,
     # Fold, Dock and Score
     verbose_print("Predicting the antibody-antigen complexes" if ag_model is not None else "Predicting the antibody structure")
     fold_dock_results = dock.predict([ab_input, ag_input])
-    ab_score_input, ag_score_input, pred_ab, pred_ag = convert_dock_input_to_score_input(ab_input, ag_input, fold_dock_results)
+    ab_score_input, ag_score_input, pred_ab, pred_ag = convert_dock_input_to_score_input(heavy_seq, light_seq, ab_input, ag_input, fold_dock_results)
 
     if ag_model is not None:
         verbose_print("Calculating scores for the antibody-antigen complexes")
